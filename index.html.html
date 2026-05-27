@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SLUGGER — 야구용품 전문점</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── CSS Variables ── */
+    :root {
+      --navy:   #0b1829;
+      --navy2:  #132238;
+      --red:    #e8192c;
+      --red2:   #c0111f;
+      --cream:  #f5ede0;
+      --gold:   #f0b429;
+      --gray:   #8a9bb0;
+      --border: rgba(245,237,224,.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--navy);
+      color: var(--cream);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(11,24,41,.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 2rem; height: 64px; gap: 2rem;
+    }
+    .nav-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.6rem; font-weight: 700;
+      color: var(--cream); cursor: pointer;
+      letter-spacing: .05em; flex-shrink: 0;
+    }
+    .nav-logo span { color: var(--red); }
+    .nav-links { display: flex; gap: 1.4rem; flex: 1; }
+    .nav-link {
+      background: none; border: none; cursor: pointer;
+      color: var(--gray); font-family: 'Noto Sans KR', sans-serif;
+      font-size: .85rem; font-weight: 500; letter-spacing: .04em;
+      padding: .3rem 0; transition: color .2s;
+      position: relative;
+    }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 2px; background: var(--red);
+      transition: width .25s ease;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--cream); }
+    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+    .nav-cart {
+      background: var(--red); border: none; cursor: pointer;
+      color: #fff; font-family: 'Oswald', sans-serif;
+      font-size: .85rem; letter-spacing: .07em; padding: .45rem 1.1rem;
+      border-radius: 2px; display: flex; align-items: center; gap: .4rem;
+      transition: background .2s;
+    }
+    .nav-cart:hover { background: var(--red2); }
+    .cart-badge {
+      background: var(--gold); color: var(--navy);
+      border-radius: 50%; width: 18px; height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 700;
+    }
+
+    /* ── PAGE WRAPPER ── */
+    #app { min-height: calc(100vh - 64px); }
+    .page { animation: fadeIn .35s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+    /* ── HOME ── */
+    .hero {
+      position: relative; overflow: hidden;
+      padding: 6rem 2rem 5rem;
+      background: linear-gradient(135deg, #0b1829 0%, #1a0a0e 100%);
+      display: flex; align-items: center; gap: 3rem;
+    }
+    .hero::before {
+      content: '⚾'; position: absolute; right: -1rem; top: 50%;
+      transform: translateY(-50%) rotate(-15deg);
+      font-size: 22rem; opacity: .04; user-select: none;
+      line-height: 1;
+    }
+    .hero-text { max-width: 580px; z-index: 1; }
+    .hero-eyebrow {
+      font-family: 'Oswald', sans-serif; font-size: .75rem;
+      letter-spacing: .22em; color: var(--red);
+      text-transform: uppercase; margin-bottom: .8rem;
+    }
+    .hero-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 700; line-height: .95;
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .hero-title em { color: var(--red); font-style: normal; display: block; }
+    .hero-desc { color: var(--gray); line-height: 1.7; margin-bottom: 2rem; font-size: .95rem; }
+    .btn-primary {
+      background: var(--red); color: #fff; border: none; cursor: pointer;
+      font-family: 'Oswald', sans-serif; font-size: 1rem;
+      letter-spacing: .1em; padding: .8rem 2.2rem;
+      border-radius: 2px; transition: background .2s, transform .15s;
+    }
+    .btn-primary:hover { background: var(--red2); transform: translateY(-2px); }
+    .btn-outline {
+      background: transparent; color: var(--cream); border: 1px solid var(--border);
+      cursor: pointer; font-family: 'Oswald', sans-serif; font-size: 1rem;
+      letter-spacing: .1em; padding: .8rem 2.2rem;
+      border-radius: 2px; transition: border-color .2s, color .2s; margin-left: .8rem;
+    }
+    .btn-outline:hover { border-color: var(--cream); }
+
+    .section-title {
+      font-family: 'Oswald', sans-serif; font-size: 1.8rem;
+      font-weight: 600; letter-spacing: .05em;
+      margin-bottom: 1.5rem;
+    }
+    .section-title span { color: var(--red); }
+
+    /* Featured categories */
+    .categories {
+      padding: 3rem 2rem;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .cat-card {
+      background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1.8rem 1.4rem;
+      cursor: pointer; transition: border-color .2s, transform .2s;
+      display: flex; flex-direction: column; gap: .5rem;
+    }
+    .cat-card:hover { border-color: var(--red); transform: translateY(-4px); }
+    .cat-icon { font-size: 2rem; }
+    .cat-name { font-family: 'Oswald', sans-serif; font-size: 1.1rem; font-weight: 600; }
+    .cat-count { font-size: .78rem; color: var(--gray); }
+
+    /* Featured products strip */
+    .featured {
+      padding: 0 2rem 3rem;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.2rem;
+    }
+    .product-card {
+      background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 4px; overflow: hidden; cursor: pointer;
+      transition: border-color .2s, transform .2s;
+    }
+    .product-card:hover { border-color: var(--red); transform: translateY(-4px); }
+    .product-img {
+      width: 100%; height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem; background: rgba(255,255,255,.03);
+    }
+    .product-info { padding: 1rem; }
+    .product-badge {
+      font-size: .65rem; font-weight: 700; letter-spacing: .1em;
+      padding: .15rem .5rem; border-radius: 2px; display: inline-block;
+      margin-bottom: .5rem; text-transform: uppercase;
+    }
+    .badge-new { background: var(--red); color: #fff; }
+    .badge-best { background: var(--gold); color: var(--navy); }
+    .badge-sale { background: #1a3a1a; color: #6ddb6d; }
+    .product-name { font-weight: 500; font-size: .95rem; margin-bottom: .3rem; }
+    .product-brand { font-size: .75rem; color: var(--gray); margin-bottom: .6rem; }
+    .product-price { font-family: 'Oswald', sans-serif; font-size: 1.15rem; color: var(--gold); }
+    .product-price-orig { font-size: .8rem; color: var(--gray); text-decoration: line-through; margin-right: .4rem; }
+
+    /* ── PRODUCTS PAGE ── */
+    .shop-layout { display: flex; gap: 1.5rem; padding: 2rem; }
+    .filter-sidebar {
+      width: 200px; flex-shrink: 0;
+    }
+    .filter-title { font-family: 'Oswald', sans-serif; font-size: .8rem; letter-spacing: .15em; color: var(--gray); text-transform: uppercase; margin-bottom: .8rem; }
+    .filter-btn {
+      display: block; width: 100%; text-align: left;
+      background: none; border: none; cursor: pointer;
+      color: var(--gray); font-family: 'Noto Sans KR', sans-serif;
+      font-size: .85rem; padding: .4rem .6rem; border-radius: 3px;
+      transition: background .15s, color .15s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: rgba(232,25,44,.15); color: var(--red);
+    }
+    .shop-main { flex: 1; }
+    .shop-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+    .shop-count { font-size: .82rem; color: var(--gray); }
+
+    /* ── PRODUCT DETAIL ── */
+    .detail-layout { display: flex; gap: 3rem; padding: 2.5rem 2rem; }
+    .detail-image {
+      width: 340px; height: 340px; flex-shrink: 0;
+      background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 8rem;
+    }
+    .detail-info { flex: 1; }
+    .detail-brand { font-size: .78rem; letter-spacing: .12em; color: var(--red); text-transform: uppercase; margin-bottom: .5rem; }
+    .detail-name { font-family: 'Oswald', sans-serif; font-size: 2rem; font-weight: 700; margin-bottom: .6rem; line-height: 1.2; }
+    .detail-stars { color: var(--gold); font-size: .9rem; margin-bottom: 1rem; }
+    .detail-price { font-family: 'Oswald', sans-serif; font-size: 2.2rem; color: var(--gold); margin-bottom: 1.2rem; }
+    .detail-desc { color: var(--gray); line-height: 1.75; font-size: .9rem; margin-bottom: 1.5rem; }
+    .detail-features { list-style: none; margin-bottom: 1.8rem; }
+    .detail-features li { padding: .4rem 0; border-bottom: 1px solid var(--border); font-size: .88rem; display: flex; gap: .6rem; }
+    .detail-features li::before { content: '✓'; color: var(--red); font-weight: 700; }
+    .qty-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+    .qty-btn { background: var(--navy2); border: 1px solid var(--border); color: var(--cream); width: 32px; height: 32px; border-radius: 2px; cursor: pointer; font-size: 1rem; transition: border-color .2s; }
+    .qty-btn:hover { border-color: var(--red); }
+    .qty-val { font-family: 'Oswald', sans-serif; font-size: 1.1rem; min-width: 28px; text-align: center; }
+    .btn-addcart { background: var(--red); border: none; cursor: pointer; color: #fff; font-family: 'Oswald', sans-serif; font-size: 1rem; letter-spacing: .1em; padding: .85rem 2.4rem; border-radius: 2px; transition: background .2s; }
+    .btn-addcart:hover { background: var(--red2); }
+    .btn-back { background: none; border: none; cursor: pointer; color: var(--gray); font-family: 'Noto Sans KR', sans-serif; font-size: .85rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: .4rem; transition: color .2s; }
+    .btn-back:hover { color: var(--cream); }
+
+    /* ── CART ── */
+    .cart-wrap { padding: 2rem; max-width: 760px; margin: 0 auto; }
+    .cart-item {
+      display: flex; gap: 1.2rem; align-items: center;
+      background: var(--navy2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1rem 1.2rem; margin-bottom: .8rem;
+    }
+    .cart-item-img { font-size: 2.5rem; width: 56px; text-align: center; }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-weight: 500; font-size: .92rem; margin-bottom: .2rem; }
+    .cart-item-brand { font-size: .75rem; color: var(--gray); }
+    .cart-item-price { font-family: 'Oswald', sans-serif; color: var(--gold); font-size: 1.05rem; margin-left: auto; }
+    .cart-remove { background: none; border: none; cursor: pointer; color: var(--gray); font-size: .8rem; padding: .3rem; transition: color .2s; }
+    .cart-remove:hover { color: var(--red); }
+    .cart-summary { background: var(--navy2); border: 1px solid var(--border); border-radius: 4px; padding: 1.4rem; margin-top: 1.4rem; }
+    .cart-row { display: flex; justify-content: space-between; font-size: .88rem; padding: .4rem 0; border-bottom: 1px solid var(--border); color: var(--gray); }
+    .cart-total { display: flex; justify-content: space-between; padding-top: 1rem; font-family: 'Oswald', sans-serif; font-size: 1.3rem; }
+    .cart-empty { text-align: center; padding: 4rem 2rem; }
+    .cart-empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: .4; }
+    .cart-empty p { color: var(--gray); }
+
+    /* ── ABOUT ── */
+    .about-wrap { padding: 3rem 2rem; max-width: 700px; margin: 0 auto; }
+    .about-wrap h2 { font-family: 'Oswald', sans-serif; font-size: 2.5rem; font-weight: 700; margin-bottom: .5rem; }
+    .about-wrap h2 em { color: var(--red); font-style: normal; }
+    .about-wrap p { color: var(--gray); line-height: 1.8; margin-bottom: 1rem; font-size: .92rem; }
+    .about-stats { display: flex; gap: 2rem; margin: 2rem 0; }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Oswald', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--gold); }
+    .stat-label { font-size: .78rem; color: var(--gray); letter-spacing: .1em; text-transform: uppercase; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--navy2); border: 1px solid var(--red);
+      color: var(--cream); padding: .9rem 1.4rem;
+      border-radius: 4px; font-size: .88rem;
+      opacity: 0; pointer-events: none; z-index: 999;
+      transition: opacity .3s; transform: translateY(8px);
+    }
+    #toast.show { opacity: 1; transform: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem; text-align: center;
+      font-size: .78rem; color: var(--gray); margin-top: 2rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 3rem 1.2rem; }
+      .hero::before { font-size: 12rem; }
+      .shop-layout { flex-direction: column; }
+      .filter-sidebar { width: 100%; display: flex; flex-wrap: wrap; gap: .4rem; }
+      .detail-layout { flex-direction: column; }
+      .detail-image { width: 100%; }
+    }
+
+    /* ── REPORT ── */
+    #report {
+      background: #070f1a;
+      border-top: 3px solid var(--red);
+      padding: 4rem 2rem;
+    }
+    .report-inner { max-width: 900px; margin: 0 auto; }
+    .report-eyebrow {
+      font-size: .72rem; letter-spacing: .22em; color: var(--red);
+      text-transform: uppercase; margin-bottom: .7rem;
+    }
+    .report-heading {
+      font-family: 'Oswald', sans-serif; font-size: 2.2rem;
+      font-weight: 700; margin-bottom: .4rem;
+    }
+    .report-heading span { color: var(--red); }
+    .report-sub { color: var(--gray); font-size: .85rem; margin-bottom: 2.5rem; }
+
+    .report-card {
+      background: var(--navy2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 1.2rem;
+      overflow: hidden;
+    }
+    .rc-label {
+      background: rgba(232,25,44,.1);
+      border-bottom: 1px solid var(--border);
+      padding: .65rem 1.2rem;
+      font-family: 'Oswald', sans-serif;
+      font-size: .82rem; letter-spacing: .1em;
+      color: var(--red); text-transform: uppercase;
+    }
+    .rc-body { padding: 1.2rem 1.4rem; }
+
+    .info-table { width: 100%; border-collapse: collapse; font-size: .87rem; }
+    .info-table th, .info-table td { padding: .55rem .6rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .info-table th { color: var(--gray); font-weight: 400; width: 130px; white-space: nowrap; }
+    .info-table td { color: var(--cream); }
+    .info-table tr:last-child th, .info-table tr:last-child td { border-bottom: none; }
+
+    .concept-table thead th { color: var(--gold); font-weight: 600; font-size: .8rem; letter-spacing: .06em; }
+    .concept-table td:first-child, .concept-table td:nth-child(2) { font-family: monospace; font-size: .82rem; color: #7dd3fc; white-space: nowrap; }
+    .concept-table td:last-child { color: var(--gray); font-size: .83rem; }
+    code { background: rgba(125,211,252,.1); color: #7dd3fc; padding: .1rem .35rem; border-radius: 3px; font-size: .82rem; }
+
+    .ai-tool-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .ai-tool-badge {
+      background: linear-gradient(135deg, #c0111f, #e8192c);
+      color: #fff; font-family: 'Oswald', sans-serif;
+      font-size: .95rem; letter-spacing: .08em;
+      padding: .45rem 1.1rem; border-radius: 3px;
+    }
+    .ai-tool-desc { color: var(--gray); font-size: .88rem; }
+    .ai-tool-desc a { color: var(--gold); text-decoration: none; }
+
+    .prompts-body { display: flex; flex-direction: column; gap: 1.2rem; }
+    .prompt-item {}
+    .prompt-turn { font-size: .75rem; letter-spacing: .1em; color: var(--gold); text-transform: uppercase; margin-bottom: .5rem; }
+    .prompt-bubble {
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      border-radius: 0 4px 4px 0;
+      padding: .9rem 1.1rem;
+      font-size: .87rem; line-height: 1.75; color: var(--cream);
+      white-space: pre-wrap;
+    }
+    .prompt-result { font-size: .8rem; color: var(--gray); margin-top: .45rem; padding-left: .5rem; }
+
+    .tech-grid { display: flex; flex-wrap: wrap; gap: .6rem; }
+    .tech-chip {
+      background: rgba(240,180,41,.1);
+      border: 1px solid rgba(240,180,41,.25);
+      color: var(--gold); font-size: .78rem;
+      padding: .3rem .8rem; border-radius: 2px;
+      letter-spacing: .04em;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo" onclick="navigate('home')">SLUG<span>GER</span></div>
+  <div class="nav-links">
+    <button class="nav-link" id="nl-home"    onclick="navigate('home')">홈</button>
+    <button class="nav-link" id="nl-shop"    onclick="navigate('shop')">상품</button>
+    <button class="nav-link" id="nl-about"   onclick="navigate('about')">브랜드 소개</button>
+  </div>
+  <button class="nav-cart" onclick="navigate('cart')">
+    🛒 장바구니
+    <span class="cart-badge" id="cart-badge">0</span>
+  </button>
+</nav>
+
+<div id="app"></div>
+
+<div id="toast"></div>
+
+<!-- ── 제작 보고서 ── -->
+<section id="report">
+  <div class="report-inner">
+    <div class="report-eyebrow">📋 PRODUCTION REPORT</div>
+    <h2 class="report-heading">페이지 <span>제작 보고서</span></h2>
+    <p class="report-sub">웹프로그래밍 실습 — React Router 기반 쇼핑몰 제작</p>
+
+    <!-- 개요 -->
+    <div class="report-card">
+      <div class="rc-label">01 · 프로젝트 개요</div>
+      <div class="rc-body">
+        <table class="info-table">
+          <tr><th>프로젝트명</th><td>SLUGGER — 야구용품 전문 쇼핑몰</td></tr>
+          <tr><th>목적</th><td>React Router(v6) 개념을 활용한 다중 페이지 SPA 구현 실습</td></tr>
+          <tr><th>구현 방법</th><td>React Router 개념을 순수 HTML/CSS/JavaScript로 재현 (단일 파일)</td></tr>
+          <tr><th>구현 페이지</th><td>홈 · 상품목록 · 상품상세 · 장바구니 · 브랜드소개 (총 5개)</td></tr>
+          <tr><th>제출 형식</th><td>단일 .html 파일 (외부 라이브러리 미사용)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- React Router 개념 매핑 -->
+    <div class="report-card">
+      <div class="rc-label">02 · React Router 개념 구현 매핑</div>
+      <div class="rc-body">
+        <table class="info-table concept-table">
+          <thead><tr><th>React Router (v6)</th><th>본 프로젝트 구현</th><th>설명</th></tr></thead>
+          <tbody>
+            <tr><td><code>&lt;BrowserRouter&gt;</code></td><td><code>currentRoute</code> 전역 변수</td><td>현재 활성 경로를 상태로 관리</td></tr>
+            <tr><td><code>&lt;Link to="..."&gt;</code></td><td><code>navigate('경로')</code> 호출</td><td>페이지 새로고침 없이 화면 전환</td></tr>
+            <tr><td><code>&lt;Routes&gt; / &lt;Route&gt;</code></td><td><code>renderPage()</code> switch 분기</td><td>경로에 따른 컴포넌트 렌더링</td></tr>
+            <tr><td><code>useParams()</code></td><td><code>routeParam</code> 변수</td><td>상품 상세 페이지의 <code>:id</code> 파라미터</td></tr>
+            <tr><td><code>useNavigate()</code></td><td><code>navigate()</code> 함수</td><td>장바구니 결제 후 홈으로 강제 이동</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AI 활용 -->
+    <div class="report-card">
+      <div class="rc-label">03 · AI 활용 내역</div>
+      <div class="rc-body">
+        <div class="ai-tool-row">
+          <div class="ai-tool-badge">🤖 Claude Sonnet 4.6</div>
+          <div class="ai-tool-desc">Anthropic · <a href="https://claude.ai" target="_blank">claude.ai</a></div>
+        </div>
+        <p style="color:var(--gray);font-size:.88rem;line-height:1.7;margin-top:.8rem">
+          전체 HTML/CSS/JavaScript 코드 생성 및 UI 디자인에 활용하였습니다.
+          React Router의 핵심 개념(BrowserRouter, Link, Routes, Route, useParams, useNavigate)을
+          순수 JavaScript로 재현하는 아이디어와 코드 구조를 AI가 제안하였으며,
+          야구용품 상품 데이터 구성 및 디자인 시스템 설계도 AI와 협업하여 완성하였습니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- 프롬프트 -->
+    <div class="report-card">
+      <div class="rc-label">04 · 입력 프롬프트</div>
+      <div class="rc-body prompts-body">
+
+        <div class="prompt-item">
+          <div class="prompt-turn">Turn 1 · 최초 생성 요청</div>
+          <div class="prompt-bubble">
+            웹프로그래밍 수업 자료를 참고하여 마지막 페이지의 실습문제를 .html을 활용하여 코딩해줘.<br><br>
+            실습: 간단한 쇼핑몰 제작 – React router 를 이용한 다중 페이지 이동<br>
+            스포츠 특히 야구 용품을 파는 가상의 쇼핑몰을 만들어줘.
+          </div>
+          <div class="prompt-result">→ React Router 개념 매핑, 5개 페이지(홈·상품·상세·장바구니·소개), 8종 야구용품 데이터, 다크 스포츠 테마 UI 생성</div>
+        </div>
+
+        <div class="prompt-item">
+          <div class="prompt-turn">Turn 2 · 보고서 추가 요청</div>
+          <div class="prompt-bubble">
+            페이지 제작 보고서를 웹 하단에 추가해줘. 어떤 ai를 사용하여 어떤 프롬프트를 입력하는지.
+          </div>
+          <div class="prompt-result">→ 제작 보고서 섹션(개요·개념매핑·AI활용·프롬프트·기술스택) 페이지 하단에 삽입</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 기술 스택 -->
+    <div class="report-card">
+      <div class="rc-label">05 · 기술 스택 및 구현 세부사항</div>
+      <div class="rc-body">
+        <div class="tech-grid">
+          <div class="tech-chip">HTML5</div>
+          <div class="tech-chip">CSS3 (Variables · Grid · Flexbox · Animation)</div>
+          <div class="tech-chip">Vanilla JavaScript (ES6+)</div>
+          <div class="tech-chip">Google Fonts (Oswald · Noto Sans KR)</div>
+          <div class="tech-chip">Hash-based SPA Router (자체 구현)</div>
+          <div class="tech-chip">반응형 레이아웃 (모바일 대응)</div>
+        </div>
+        <p style="color:var(--gray);font-size:.82rem;margin-top:1rem;line-height:1.7">
+          외부 프레임워크 없이 단일 .html 파일로 구성. 상태 관리(cart, route, filter)를 전역 변수로 처리하며,
+          DOM을 innerHTML로 교체하는 방식으로 컴포넌트 재렌더링을 구현하였습니다.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  &copy; 2025 SLUGGER 야구용품. React Router 실습 — 웹프로그래밍 강의자료 기반
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════
+   ROUTER — React Router 개념을 순수 JS로 구현
+   BrowserRouter  → 전역 상태 + navigate()
+   Link           → navigate() 를 호출하는 버튼
+   Routes/Route   → renderPage() 의 switch 구조
+   useParams      → url 의 쿼리 파라미터
+   useNavigate    → navigate() 함수
+═══════════════════════════════════════════════ */
+
+let currentRoute = 'home';
+let routeParam   = null;          // :id 역할
+
+function navigate(route, param) {
+  currentRoute = route;
+  routeParam   = param || null;
+  renderPage();
+  updateNav();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateNav() {
+  ['home','shop','about'].forEach(r => {
+    const el = document.getElementById('nl-' + r);
+    if (el) el.classList.toggle('active', currentRoute === r);
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   DATA — 야구 용품 상품 목록
+═══════════════════════════════════════════════ */
+const products = [
+  { id: 1, name: 'Pro Series 배팅 글러브', brand: 'Rawlings', category: '배팅장갑', price: 89000, orig: null, emoji: '🧤', badge: 'new',
+    stars: '★★★★★', rating: 5, desc: '최고급 양가죽으로 제작된 프로급 배팅 글러브. 손목 벨크로 조절 시스템과 향상된 그립 패드로 최상의 배팅감을 선사합니다.',
+    features: ['천연 양가죽 소재', '손목 벨크로 스트랩', '반응성 폼 패딩', '좌·우손 구분 제작', '프로 팀 선수 공동 개발'] },
+  { id: 2, name: 'Diamond King 알루미늄 배트', brand: 'Louisville Slugger', category: '배트', price: 245000, orig: 290000, emoji: '🏏', badge: 'sale',
+    stars: '★★★★☆', rating: 4.5, desc: '항공용 알루미늄 합금으로 제작된 고반발 배트. 스위트스팟을 극대화한 설계로 더 강력한 타구를 경험하세요.',
+    features: ['7050 항공 알루미늄', '확장형 스위트스팟', '컴포지트 엔드캡', '쿠션 컵 그립', 'KBO 리그 공인'] },
+  { id: 3, name: 'Ace Guard 포수 장갑', brand: 'Mizuno', category: '글러브', price: 185000, orig: null, emoji: '⚾', badge: 'best',
+    stars: '★★★★★', rating: 5, desc: '미즈노 장인이 수작업으로 완성한 포수용 미트. 딱딱한 공을 부드럽게 흡수하는 프리미엄 가죽이 특징입니다.',
+    features: ['스테어하이드 천연 가죽', '오일 가공 처리', '깊은 포켓 구조', '내구성 강화 바인딩', '1년 품질 보증'] },
+  { id: 4, name: 'Sprint Pro 야구화', brand: 'Nike', category: '야구화', price: 128000, orig: 155000, emoji: '👟', badge: 'sale',
+    stars: '★★★★☆', rating: 4, desc: '빠른 스타트와 안정적인 수비를 위해 설계된 포지션 야구화. 경량 스파이크와 발목 지지대가 결합됐습니다.',
+    features: ['유리섬유 스파이크 6개', '합성 피혁 갑피', '에어쿠션 중창', '발목 보호 패드', '미끄럼 방지 처리'] },
+  { id: 5, name: 'AllStar 야구 헬멧', brand: 'Rawlings', category: '헬멧', price: 76000, orig: null, emoji: '⛑', badge: 'new',
+    stars: '★★★★★', rating: 5, desc: '충격 흡수 ABS 쉘과 고밀도 폼 라이너로 최대의 안전을 보장. 통기홀 설계로 장시간 착용도 쾌적합니다.',
+    features: ['ABS 하드쉘', '이중 귀덮개', '고밀도 EPS 폼', '6개 통기홀', 'KSA 안전 인증'] },
+  { id: 6, name: 'PowerFlex 야구 유니폼 세트', brand: 'Majestic', category: '유니폼', price: 98000, orig: null, emoji: '👕', badge: 'best',
+    stars: '★★★★☆', rating: 4, desc: '스트레치 원단으로 투구와 수비 동작에 전혀 제약이 없는 프로급 유니폼. 상·하의·스타킹 3종 세트입니다.',
+    features: ['4방향 스트레치 원단', '흡한속건 기능', '실루엣 핏 디자인', '승화 인쇄 번호', '팀 로고 커스텀 가능'] },
+  { id: 7, name: 'FieldPro 내야 글러브', brand: 'Wilson', category: '글러브', price: 210000, orig: 260000, emoji: '🥎', badge: 'sale',
+    stars: '★★★★★', rating: 5, desc: '내야수 전용으로 설계된 얕은 포켓과 빠른 공 전달. 오프너 웨빙으로 가시성을 높였습니다.',
+    features: ['Pro Stock 가죽', '오픈 웨빙', '얕은 내야 포켓', '블라인드 스티치', '더블 왁싱 처리'] },
+  { id: 8, name: 'Strike Zone 배팅 티', brand: 'Easton', category: '훈련용품', price: 45000, orig: null, emoji: '🎯', badge: 'new',
+    stars: '★★★★☆', rating: 4, desc: '높이 조절 범위가 넓어 어린이부터 성인까지 사용 가능한 배팅 티. 고무 재질의 홀더가 내구성을 높였습니다.',
+    features: ['25~110cm 높이 조절', '강화 고무 홀더', '삼각 베이스', '접이식 경량 디자인', '가방 포함'] },
+];
+
+/* ═══════════════════════════════════════════════
+   CART STATE
+═══════════════════════════════════════════════ */
+let cart = [];
+
+function addToCart(product, qty) {
+  const existing = cart.find(i => i.id === product.id);
+  if (existing) { existing.qty += qty; }
+  else { cart.push({ ...product, qty }); }
+  updateCartBadge();
+  showToast('🛒 장바구니에 추가되었습니다!');
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(i => i.id !== id);
+  updateCartBadge();
+  renderPage();
+}
+
+function updateCartBadge() {
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cart-badge').textContent = total;
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ═══════════════════════════════════════════════
+   ROUTER — renderPage()  (Routes + Route 역할)
+═══════════════════════════════════════════════ */
+function renderPage() {
+  const app = document.getElementById('app');
+  switch (currentRoute) {
+    case 'home':    app.innerHTML = pageHome();    attachHomeEvents(); break;
+    case 'shop':    app.innerHTML = pageShop();    attachShopEvents(); break;
+    case 'product': app.innerHTML = pageProduct(); attachProductEvents(); break;
+    case 'cart':    app.innerHTML = pageCart();    attachCartEvents(); break;
+    case 'about':   app.innerHTML = pageAbout();   break;
+    default:        app.innerHTML = page404();
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: HOME
+═══════════════════════════════════════════════ */
+function pageHome() {
+  const featured = products.filter(p => p.badge === 'best' || p.badge === 'new').slice(0, 4);
+  return `
+  <div class="page">
+    <div class="hero">
+      <div class="hero-text">
+        <div class="hero-eyebrow">2025 신상품 입고 완료</div>
+        <h1 class="hero-title">
+          프로의 장비로<em>플레이하라</em>
+        </h1>
+        <p class="hero-desc">국내 최대 야구용품 전문점 SLUGGER. 프로팀 공식 납품 브랜드의 최고급 장비를 지금 만나보세요.</p>
+        <button class="btn-primary" onclick="navigate('shop')">쇼핑 시작하기</button>
+        <button class="btn-outline" onclick="navigate('about')">브랜드 소개</button>
+      </div>
+    </div>
+
+    <div class="categories" style="padding-top:2.5rem;">
+      <div style="grid-column:1/-1;"><h2 class="section-title">카테고리 <span>탐색</span></h2></div>
+      ${[
+        { icon:'🧤', name:'배팅장갑', count:12 },
+        { icon:'🏏', name:'배트',   count:18 },
+        { icon:'⚾', name:'글러브',  count:24 },
+        { icon:'👟', name:'야구화',  count:15 },
+        { icon:'⛑',  name:'헬멧',   count:9  },
+        { icon:'👕', name:'유니폼',  count:21 },
+      ].map(c => `
+        <div class="cat-card" onclick="filterShop('${c.name}')">
+          <div class="cat-icon">${c.icon}</div>
+          <div class="cat-name">${c.name}</div>
+          <div class="cat-count">${c.count}개 상품</div>
+        </div>`).join('')}
+    </div>
+
+    <div class="featured">
+      <h2 class="section-title">추천 <span>상품</span></h2>
+      <div class="products-grid">
+        ${featured.map(productCard).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+function attachHomeEvents() {}
+
+function filterShop(cat) {
+  currentRoute = 'shop';
+  renderPage();
+  updateNav();
+  // highlight the filter
+  setTimeout(() => {
+    const btns = document.querySelectorAll('.filter-btn');
+    btns.forEach(b => { if (b.textContent.trim() === cat) b.classList.add('active'); });
+    filterProducts(cat);
+  }, 50);
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: SHOP  (useParams 없이 전체 목록)
+═══════════════════════════════════════════════ */
+let activeFilter = '전체';
+
+function pageShop() {
+  const cats = ['전체', ...new Set(products.map(p => p.category))];
+  const shown = activeFilter === '전체' ? products : products.filter(p => p.category === activeFilter);
+  return `
+  <div class="page">
+    <div class="shop-layout">
+      <div class="filter-sidebar">
+        <div class="filter-title">카테고리</div>
+        ${cats.map(c => `<button class="filter-btn${activeFilter===c?' active':''}" onclick="filterProducts('${c}')">${c}</button>`).join('')}
+      </div>
+      <div class="shop-main">
+        <div class="shop-header">
+          <h2 class="section-title" style="margin:0">전체 <span>상품</span></h2>
+          <div class="shop-count">총 ${shown.length}개 상품</div>
+        </div>
+        <div class="products-grid" id="products-list">
+          ${shown.map(productCard).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filterProducts(cat) {
+  activeFilter = cat;
+  const shown = cat === '전체' ? products : products.filter(p => p.category === cat);
+  const grid = document.getElementById('products-list');
+  if (grid) { grid.innerHTML = shown.map(productCard).join(''); }
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === cat);
+  });
+  document.querySelector('.shop-count').textContent = `총 ${shown.length}개 상품`;
+}
+
+function attachShopEvents() {}
+
+function productCard(p) {
+  return `
+  <div class="product-card" onclick="navigate('product', ${p.id})">
+    <div class="product-img">${p.emoji}</div>
+    <div class="product-info">
+      ${p.badge ? `<span class="product-badge badge-${p.badge}">${p.badge === 'new' ? 'NEW' : p.badge === 'best' ? 'BEST' : 'SALE'}</span>` : ''}
+      <div class="product-name">${p.name}</div>
+      <div class="product-brand">${p.brand}</div>
+      <div class="product-price">
+        ${p.orig ? `<span class="product-price-orig">${p.orig.toLocaleString()}원</span>` : ''}
+        ${p.price.toLocaleString()}원
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: PRODUCT DETAIL  (useParams → routeParam)
+═══════════════════════════════════════════════ */
+let detailQty = 1;
+
+function pageProduct() {
+  const p = products.find(x => x.id === routeParam);
+  if (!p) return `<div class="page" style="padding:4rem 2rem;text-align:center"><h2>상품을 찾을 수 없습니다.</h2></div>`;
+  return `
+  <div class="page">
+    <div class="detail-layout">
+      <div>
+        <button class="btn-back" onclick="navigate('shop')">← 상품 목록으로</button>
+        <div class="detail-image">${p.emoji}</div>
+      </div>
+      <div class="detail-info">
+        <div class="detail-brand">${p.brand} · ${p.category}</div>
+        <h1 class="detail-name">${p.name}</h1>
+        <div class="detail-stars">${p.stars} (${p.rating}/5)</div>
+        <div class="detail-price">
+          ${p.orig ? `<span style="font-size:1rem;color:var(--gray);text-decoration:line-through;margin-right:.5rem">${p.orig.toLocaleString()}원</span>` : ''}
+          ${p.price.toLocaleString()}원
+        </div>
+        <p class="detail-desc">${p.desc}</p>
+        <ul class="detail-features">
+          ${p.features.map(f => `<li>${f}</li>`).join('')}
+        </ul>
+        <div class="qty-row">
+          <span style="font-size:.85rem;color:var(--gray)">수량</span>
+          <button class="qty-btn" id="btn-minus">−</button>
+          <span class="qty-val" id="qty-display">1</span>
+          <button class="qty-btn" id="btn-plus">+</button>
+        </div>
+        <button class="btn-addcart" id="btn-addcart">장바구니에 담기 🛒</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function attachProductEvents() {
+  const p = products.find(x => x.id === routeParam);
+  if (!p) return;
+  detailQty = 1;
+  document.getElementById('btn-minus').onclick = () => {
+    if (detailQty > 1) { detailQty--; document.getElementById('qty-display').textContent = detailQty; }
+  };
+  document.getElementById('btn-plus').onclick = () => {
+    detailQty++; document.getElementById('qty-display').textContent = detailQty;
+  };
+  document.getElementById('btn-addcart').onclick = () => addToCart(p, detailQty);
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: CART
+═══════════════════════════════════════════════ */
+function pageCart() {
+  if (cart.length === 0) return `
+  <div class="page cart-wrap">
+    <h2 class="section-title">장바구니 <span>0</span></h2>
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛒</div>
+      <p>장바구니가 비어 있습니다.</p>
+      <button class="btn-primary" onclick="navigate('shop')" style="margin-top:1.5rem">쇼핑 계속하기</button>
+    </div>
+  </div>`;
+
+  const sub = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const delivery = sub >= 50000 ? 0 : 3000;
+  return `
+  <div class="page cart-wrap">
+    <h2 class="section-title">장바구니 <span>${cart.length}</span></h2>
+    ${cart.map(item => `
+      <div class="cart-item">
+        <div class="cart-item-img">${item.emoji}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name} × ${item.qty}</div>
+          <div class="cart-item-brand">${item.brand}</div>
+        </div>
+        <div class="cart-item-price">${(item.price * item.qty).toLocaleString()}원</div>
+        <button class="cart-remove" onclick="removeFromCart(${item.id})">✕</button>
+      </div>`).join('')}
+    <div class="cart-summary">
+      <div class="cart-row"><span>상품 합계</span><span>${sub.toLocaleString()}원</span></div>
+      <div class="cart-row"><span>배송비</span><span>${delivery === 0 ? '<span style="color:var(--gold)">무료</span>' : delivery.toLocaleString() + '원'}</span></div>
+      <div class="cart-total"><span>최종 결제금액</span><span style="color:var(--gold)">${(sub + delivery).toLocaleString()}원</span></div>
+      <button class="btn-primary" style="width:100%;margin-top:1.2rem;padding:1rem;font-size:1.1rem" onclick="checkout()">결제하기</button>
+    </div>
+  </div>`;
+}
+
+function attachCartEvents() {}
+
+function checkout() {
+  cart = [];
+  updateCartBadge();
+  showToast('✅ 주문이 완료되었습니다! 감사합니다.');
+  navigate('home');
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE: ABOUT
+═══════════════════════════════════════════════ */
+function pageAbout() {
+  return `
+  <div class="page about-wrap">
+    <h2>SLUG<em>GER</em></h2>
+    <p style="color:var(--red);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:1.2rem">야구의 정수를 담다, 1998년 창업</p>
+    <p>SLUGGER는 1998년 대구에서 시작한 야구용품 전문 브랜드입니다. 25년 이상 국내 프로팀과 아마추어 선수에게 최고의 장비를 공급해 온 믿음직한 파트너입니다.</p>
+    <p>Rawlings, Wilson, Mizuno, Louisville Slugger 등 세계 최고 브랜드의 공식 수입사로서, 국내 소비자에게 정품 인증 상품만을 제공합니다. 모든 제품은 전문 바이어가 직접 현지에서 검수 후 국내 물류센터로 입고됩니다.</p>
+    <div class="about-stats">
+      <div class="stat"><div class="stat-num">25+</div><div class="stat-label">업력(년)</div></div>
+      <div class="stat"><div class="stat-num">38K</div><div class="stat-label">누적 고객</div></div>
+      <div class="stat"><div class="stat-num">1,200+</div><div class="stat-label">보유 상품</div></div>
+      <div class="stat"><div class="stat-num">12</div><div class="stat-label">공식 파트너 팀</div></div>
+    </div>
+    <p>저희는 단순한 상품 판매를 넘어, 야구라는 스포츠 문화를 사랑하는 모든 이들과 함께 성장하는 커뮤니티를 지향합니다.</p>
+    <button class="btn-primary" onclick="navigate('shop')">지금 쇼핑하러 가기</button>
+  </div>`;
+}
+
+function page404() {
+  return `<div class="page" style="text-align:center;padding:5rem 2rem">
+    <div style="font-size:4rem">⚾</div>
+    <h2 style="font-family:'Oswald',sans-serif;font-size:3rem;margin:.8rem 0">404</h2>
+    <p style="color:var(--gray)">페이지를 찾을 수 없습니다.</p>
+    <button class="btn-primary" onclick="navigate('home')" style="margin-top:1.5rem">홈으로</button>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+renderPage();
+updateNav();
+</script>
+</body>
+</html>
