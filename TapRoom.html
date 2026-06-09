@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TapRoom — Digital Archiving Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@300;400&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ─── CSS Variables ─────────────────────────────────────── */
+:root {
+  --bg:        #F5F0E8;
+  --bg2:       #EDE7DA;
+  --card:      #FEFCF7;
+  --sidebar:   #2C3E2D;
+  --sidebar2:  #1E2E1F;
+  --primary:   #2C3E2D;
+  --accent:    #C8843A;
+  --accent2:   #E8A05A;
+  --text:      #2A2318;
+  --text2:     #7A6E62;
+  --text3:     #B5ACA0;
+  --border:    #DDD6CA;
+  --shadow:    rgba(42,35,24,0.10);
+  --shadow2:   rgba(42,35,24,0.18);
+
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-mono:  'DM Mono', 'Courier New', monospace;
+  --font-sans:  'Noto Sans KR', sans-serif;
+
+  --radius:     14px;
+  --radius-sm:  8px;
+  --trans:      all 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+[data-theme="dark"] {
+  --bg:        #18160F;
+  --bg2:       #201E16;
+  --card:      #272318;
+  --sidebar:   #12100B;
+  --sidebar2:  #0C0A07;
+  --text:      #F0EAE0;
+  --text2:     #9A9080;
+  --text3:     #5A5448;
+  --border:    #383020;
+  --shadow:    rgba(0,0,0,0.4);
+  --shadow2:   rgba(0,0,0,0.6);
+}
+
+[data-theme="evening"] {
+  --bg:        #1C1830;
+  --bg2:       #24203C;
+  --card:      #2C2844;
+  --sidebar:   #110E22;
+  --sidebar2:  #0C0918;
+  --text:      #E8E0F0;
+  --text2:     #9088A8;
+  --text3:     #504860;
+  --border:    #38305A;
+  --shadow:    rgba(0,0,0,0.5);
+  --shadow2:   rgba(0,0,0,0.7);
+  --accent:    #A87ECF;
+  --accent2:   #C4A0E8;
+}
+
+[data-theme="forest"] {
+  --bg:        #EFF5EE;
+  --bg2:       #E4EEE3;
+  --card:      #F8FCF7;
+  --sidebar:   #1E3320;
+  --sidebar2:  #162618;
+  --accent:    #5A8F4A;
+  --accent2:   #78B066;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── LANDING ───────────────────────────────────────────── */
+#landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--sidebar);
+}
+
+.landing-noise {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E");
+  pointer-events: none; opacity: 0.4;
+}
+
+.landing-glow {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,132,58,0.18) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  pointer-events: none;
+}
+
+.landing-glow2 {
+  position: absolute;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(100,160,80,0.12) 0%, transparent 70%);
+  bottom: -80px; left: -80px;
+  pointer-events: none;
+}
+
+.landing-content {
+  position: relative; z-index: 1;
+  text-align: center;
+  animation: fadeInUp 0.8s ease both;
+}
+
+.landing-logo {
+  font-family: var(--font-serif);
+  font-size: 5rem;
+  font-weight: 600;
+  color: #F5F0E8;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.landing-logo span { color: var(--accent2); }
+
+.landing-sub {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  color: rgba(245,240,232,0.5);
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+
+.landing-tagline {
+  margin-top: 28px;
+  font-size: 1.1rem;
+  color: rgba(245,240,232,0.7);
+  font-weight: 300;
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+.landing-features {
+  display: flex;
+  gap: 20px;
+  margin-top: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.l-feat {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  width: 180px;
+  text-align: left;
+  backdrop-filter: blur(8px);
+  transition: var(--trans);
+}
+.l-feat:hover { background: rgba(255,255,255,0.09); transform: translateY(-3px); }
+.l-feat-icon { font-size: 1.6rem; margin-bottom: 8px; }
+.l-feat-title { font-size: 0.75rem; font-weight: 500; color: #F5F0E8; letter-spacing: 1px; text-transform: uppercase; }
+.l-feat-desc  { font-size: 0.7rem; color: rgba(245,240,232,0.5); margin-top: 4px; line-height: 1.5; }
+
+.landing-actions {
+  margin-top: 40px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--trans);
+  letter-spacing: 0.5px;
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,132,58,0.35); }
+
+.btn-ghost {
+  background: transparent;
+  color: rgba(245,240,232,0.7);
+  border: 1px solid rgba(245,240,232,0.2);
+  padding: 14px 32px;
+  border-radius: 100px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--trans);
+}
+.btn-ghost:hover { border-color: rgba(245,240,232,0.5); color: #F5F0E8; }
+
+/* ─── AUTH MODAL ────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+
+.modal-box {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 36px;
+  width: 380px;
+  box-shadow: 0 24px 60px var(--shadow2);
+  transform: translateY(20px);
+  transition: transform 0.25s ease;
+  position: relative;
+}
+.modal-overlay.active .modal-box { transform: translateY(0); }
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.modal-subtitle { font-size: 0.82rem; color: var(--text2); margin-bottom: 28px; }
+
+.modal-close {
+  position: absolute; top: 18px; right: 18px;
+  background: none; border: none; font-size: 1.4rem;
+  cursor: pointer; color: var(--text2); opacity: 0.5;
+  transition: var(--trans);
+}
+.modal-close:hover { opacity: 1; }
+
+.form-group {
+  margin-bottom: 18px;
+}
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--text2);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  transition: var(--trans);
+}
+.form-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,132,58,0.1); }
+
+.modal-actions {
+  display: flex; gap: 10px;
+  margin-top: 30px;
+}
+.modal-btn {
+  flex: 1;
+  padding: 11px;
+  border: 1px solid var(--border);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: var(--trans);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.modal-btn:hover { background: var(--bg2); }
+.modal-btn.primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+.modal-btn.primary:hover { background: var(--accent2); }
+
+/* ─── LAYOUT ────────────────────────────────────────────── */
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+#sidebar {
+  width: 240px;
+  background: var(--sidebar);
+  color: #fff;
+  padding: 24px 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  padding: 0 24px 24px;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -1px;
+}
+.sidebar-logo span { color: var(--accent2); }
+
+.nav-group {
+  margin-bottom: 20px;
+  padding: 0 12px;
+}
+.nav-title {
+  padding: 8px 12px;
+  font-size: 0.65rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  font-weight: 600;
+}
+
+.nav-item {
+  padding: 12px 16px;
+  margin: 4px 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--trans);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.6);
+}
+.nav-item:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+.nav-item.active {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+.nav-icon { font-size: 1.2rem; width: 20px; text-align: center; }
+
+.sidebar-theme {
+  margin-top: auto;
+  padding: 0 12px 24px;
+}
+.sidebar-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  margin-bottom: 24px;
+}
+
+.theme-group {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.theme-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.theme-btn {
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.6);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: var(--trans);
+}
+.theme-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+.theme-btn.active {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+  border-color: rgba(255,255,255,0.4);
+}
+
+.auto-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: var(--trans);
+}
+.auto-theme-toggle:hover {
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.8);
+}
+
+.toggle-switch {
+  width: 32px;
+  height: 18px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 9px;
+  position: relative;
+  transition: var(--trans);
+}
+.toggle-switch.on {
+  background: var(--accent2);
+}
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: white;
+  border-radius: 7px;
+  top: 2px;
+  left: 2px;
+  transition: var(--trans);
+}
+.toggle-switch.on::after {
+  left: 16px;
+}
+
+/* ─── MAIN CONTENT ──────────────────────────────────────── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#topbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+}
+
+.topbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#topbarTitle {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+#topbarSubtitle {
+  font-size: 0.8rem;
+  color: var(--text2);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: var(--trans);
+  color: var(--text2);
+}
+.theme-toggle-btn:hover {
+  background: var(--bg2);
+  color: var(--accent);
+}
+
+.topbar-report-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: var(--trans);
+  color: var(--text2);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.topbar-report-btn:hover {
+  background: var(--bg2);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+#viewContent {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+}
+
+.view {
+  display: none;
+  width: 100%;
+  overflow-y: auto;
+  flex-direction: column;
+}
+.view.active { display: flex; }
+
+/* ─── ROOM VIEW ─────────────────────────────────────────── */
+#roomView {
+  padding: 32px;
+  gap: 24px;
+}
+
+#roomView h2 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.room-scene-container {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  overflow: hidden;
+}
+
+.room-scene-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.room-scene-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.toggle-btn {
+  background: none;
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--text2);
+  transition: var(--trans);
+}
+.toggle-btn:hover {
+  background: var(--bg2);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#roomScene {
+  transition: all 0.3s ease;
+  max-height: 800px;
+  overflow: hidden;
+}
+#roomScene.collapsed {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── ROOM VISUALIZATION (개선된 방 시각화) ───────────────────────────────────────────── */
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.furniture-zone {
+  background: var(--bg2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: var(--trans);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.furniture-zone:hover {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--bg2) 0%, rgba(200, 132, 58, 0.05) 100%);
+}
+
+.furniture-zone.fz-empty {
+  opacity: 0.5;
+}
+
+.furn-icon-large {
+  font-size: 3.5rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  position: relative;
+}
+
+/* 가구별 동적 아이템 표시 */
+.furn-items-decorations {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  height: 50px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-content: flex-start;
+  overflow: hidden;
+}
+
+.fi-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: popIn 0.4s cubic-bezier(0.36,0,0.66,1) forwards;
+  opacity: 0.8;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+.fi-more {
+  font-size: 0.65rem;
+  padding: 1px 3px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 2px;
+  animation: popIn 0.4s ease forwards;
+}
+
+.leaf {
+  display: inline-block;
+  font-size: 0.7rem;
+  animation: sway 2s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.music-note {
+  font-size: 0.8rem;
+  animation: float 1.5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); opacity: 0.6; }
+  50% { transform: translateY(-8px); opacity: 1; }
+}
+
+.monitor-text {
+  font-size: 0.4rem;
+  color: rgba(42,35,24,0.3);
+  opacity: 0.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 20px;
+}
+
+.furn-info {
+  position: relative;
+  z-index: 2;
+}
+
+.furn-name {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.furn-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text2);
+}
+
+.furn-count-badge {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: var(--trans);
+}
+
+.furn-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--card);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  white-space: normal;
+  width: max-content;
+  max-width: 220px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 1000;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 12px var(--shadow2);
+  word-break: break-word;
+  line-height: 1.4;
+  margin-left: -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.furniture-zone:hover .furn-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.furniture-zone:hover .furn-tooltip > div {
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+/* ─── ROOM GRID ─────────────────────────────────────────── */
+.room-grid-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+#filterBar {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.filter-chip {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--trans);
+  color: var(--text2);
+}
+.filter-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(200,132,58,0.05);
+}
+.filter-chip.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.chip-icon {
+  font-size: 1rem;
+}
+
+#roomDesc {
+  font-size: 0.85rem;
+  color: var(--text2);
+}
+
+#roomGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* ─── LINK CARD ─────────────────────────────────────────── */
+.link-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: var(--trans);
+  animation: slideInUp 0.4s cubic-bezier(0.36,0,0.66,1);
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.link-card:hover {
+  box-shadow: 0 12px 32px var(--shadow2);
+  transform: translateY(-6px);
+}
+
+.link-card.dim {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.card-accent-bar {
+  height: 3px;
+}
+
+.card-header {
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.card-furniture {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.card-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-category {
+  font-size: 0.75rem;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-favicon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.card-url {
+  padding: 0 16px;
+  font-size: 0.8rem;
+  color: var(--text2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-memo {
+  padding: 0 16px 12px;
+  font-size: 0.85rem;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+.card-footer {
+  padding: 12px 16px;
+  background: var(--bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+}
+
+.card-date {
+  font-size: 0.75rem;
+  color: var(--text3);
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.card-action-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: var(--trans);
+}
+.card-action-btn:hover { background: var(--bg2); }
+.card-action-btn.delete:hover { background: rgba(200, 80, 80, 0.1); }
+
+/* ─── EMPTY STATE ────────────────────────────────────────── */
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 60px 20px;
+  text-align: center;
+  opacity: 0.5;
+}
+.empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+.empty-desc { font-size: 0.9rem; color: var(--text2); }
+
+/* ─── ADD LINK BUTTON ────────────────────────────────────── */
+.add-link-btn {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(200,132,58,0.3);
+  transition: var(--trans);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.add-link-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px rgba(200,132,58,0.4);
+}
+.add-link-btn:active {
+  transform: scale(0.95);
+}
+
+/* ─── LIBRARY VIEW ──────────────────────────────────────── */
+#libraryView {
+  padding: 32px;
+}
+
+#libFilterBar {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.library-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.library-search {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+#searchInput:focus { outline: none; border-color: var(--accent); }
+
+#sortSelect {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text);
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+#sortSelect:focus { outline: none; border-color: var(--accent); }
+
+#libraryList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.list-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: var(--trans);
+  animation: slideInUp 0.3s ease;
+}
+.list-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.list-furniture {
+  font-size: 1.4rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.list-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-title {
+  font-weight: 500;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-url {
+  font-size: 0.8rem;
+  color: var(--text2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-category {
+  font-size: 0.75rem;
+  color: var(--text2);
+  padding: 4px 8px;
+  background: var(--bg);
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.list-date {
+  font-size: 0.8rem;
+  color: var(--text2);
+  flex-shrink: 0;
+  min-width: 60px;
+  text-align: right;
+}
+
+.list-delete {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: var(--trans);
+  flex-shrink: 0;
+}
+.list-delete:hover { background: rgba(200, 80, 80, 0.1); }
+
+/* ─── SETTINGS VIEW ────────────────────────────────────────── */
+#settingsView {
+  padding: 32px;
+}
+
+.settings-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.settings-title {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.settings-group {
+  margin-bottom: 24px;
+}
+
+.settings-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.settings-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.settings-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: var(--trans);
+}
+.settings-btn:hover { background: var(--bg2); border-color: var(--accent); }
+.settings-btn.danger { border-color: #cc5555; color: #cc5555; }
+.settings-btn.danger:hover { background: rgba(200, 80, 80, 0.1); }
+
+/* ─── TOAST ─────────────────────────────────────────────── */
+#toastContainer {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  background: var(--text);
+  color: var(--card);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  animation: slideInUp 0.3s ease;
+  box-shadow: 0 4px 12px var(--shadow2);
+}
+.toast.success { background: #5a8f4a; color: white; }
+.toast.error { background: #cc5555; color: white; }
+
+/* ─── PRODUCT REPORT MODAL ──────────────────────────── */
+.report-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.report-modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.report-modal-box {
+  background: var(--card);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px var(--shadow2);
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+.report-modal-overlay.active .report-modal-box {
+  transform: scale(1);
+}
+
+.report-modal-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  z-index: 10;
+}
+
+.report-modal-header h2 {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.report-modal-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text2);
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: var(--trans);
+}
+
+.report-modal-close:hover {
+  background: var(--bg2);
+  color: var(--accent);
+}
+
+.report-modal-content {
+  padding: 28px;
+}
+
+.report-section {
+  margin-bottom: 32px;
+}
+
+.report-section:last-child {
+  margin-bottom: 0;
+}
+
+.report-section h3 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-section p {
+  color: var(--text2);
+  line-height: 1.7;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.report-section strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.report-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.report-list li {
+  color: var(--text2);
+  padding: 10px 0;
+  padding-left: 28px;
+  position: relative;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.report-list li::before {
+  content: "▸";
+  position: absolute;
+  left: 8px;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.report-list strong {
+  color: var(--text);
+}
+
+.report-timeline {
+  position: relative;
+  padding-left: 40px;
+}
+
+.report-timeline::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 30px;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -43px;
+  top: 2px;
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  box-shadow: 0 0 0 4px var(--card);
+}
+
+.timeline-content h4 {
+  font-size: 1rem;
+  color: var(--text);
+  margin: 0 0 6px 0;
+  font-weight: 600;
+}
+
+.timeline-content p {
+  color: var(--text2);
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.report-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 0.9rem;
+}
+
+.report-footer p {
+  margin: 0;
+}
+
+/* ─── ANIMATIONS ────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── RESPONSIVE ────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  #sidebar { width: 200px; padding: 16px 0; }
+  #topbar { padding: 16px 24px; }
+  #roomView, #libraryView, #settingsView { padding: 24px; }
+  #roomGrid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .room-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .app-container { flex-direction: column; }
+  #sidebar {
+    width: 100%;
+    height: auto;
+    padding: 12px;
+    flex-direction: row;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo { display: none; }
+  .nav-group { margin-bottom: 0; padding: 0; display: flex; gap: 8px; }
+  #main { height: auto; }
+  #viewContent { flex-direction: column; }
+  .add-link-btn { bottom: 16px; right: 16px; width: 48px; height: 48px; font-size: 1.3rem; }
+  #roomGrid { grid-template-columns: 1fr; }
+  .room-grid { grid-template-columns: 1fr; }
+  .library-controls { flex-direction: column; align-items: stretch; }
+  .library-search { flex-direction: column; }
+}
+
+@media (max-width: 480px) {
+  #topbar { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .modal-box { width: 90%; }
+  .room-scene-container { padding: 12px; }
+  .room-grid { gap: 12px; }
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text2);
+}
+</style>
+
+</head>
+<body>
+
+<div id="landing" style="display:none;">
+  <div class="landing-noise"></div>
+  <div class="landing-glow"></div>
+  <div class="landing-glow2"></div>
+  <div class="landing-content">
+    <div class="landing-logo">Tap<span>Room</span></div>
+    <div class="landing-sub">Digital Archiving Space</div>
+    <div class="landing-tagline">당신이 저장한 링크들이 방의 가구처럼 배치되어요.<br/>링크를 수집하면서 나만의 공간을 꾸며보세요.</div>
+    <div class="landing-features">
+      <div class="l-feat">
+        <div class="l-feat-icon">🏠</div>
+        <div class="l-feat-title">My Room</div>
+        <div class="l-feat-desc">링크들을 가구처럼 배치</div>
+      </div>
+      <div class="l-feat">
+        <div class="l-feat-icon">📚</div>
+        <div class="l-feat-title">Archive</div>
+        <div class="l-feat-desc">카테고리별 전체 목록</div>
+      </div>
+      <div class="l-feat">
+        <div class="l-feat-icon">🎨</div>
+        <div class="l-feat-title">Customize</div>
+        <div class="l-feat-desc">테마 선택 및 설정</div>
+      </div>
+    </div>
+    <div class="landing-actions">
+      <button class="btn-primary" onclick="startApp()">시작하기</button>
+    </div>
+  </div>
+</div>
+
+<div class="app-container" id="appContainer" style="display:none;">
+  <div id="sidebar">
+    <div class="sidebar-logo">Tap<span>room</span></div>
+    <div class="nav-group">
+      <div class="nav-item active" id="nav-room" onclick="showView('room')">
+        <div class="nav-icon">🏠</div>
+        <div>나의 방</div>
+      </div>
+      <div class="nav-item" id="nav-library" onclick="showView('library')">
+        <div class="nav-icon">📚</div>
+        <div>아카이브</div>
+      </div>
+      <div class="nav-item" id="nav-settings" onclick="showView('settings')">
+        <div class="nav-icon">⚙️</div>
+        <div>테마 설정</div>
+      </div>
+    </div>
+    <div class="sidebar-theme">
+      <div class="sidebar-divider"></div>
+      <div class="theme-group">테마</div>
+      <div class="theme-buttons">
+        <button class="theme-btn active" onclick="applyTheme('light', this)">☀️</button>
+        <button class="theme-btn" onclick="applyTheme('dark', this)">🌙</button>
+        <button class="theme-btn" onclick="applyTheme('evening', this)">🌆</button>
+        <button class="theme-btn" onclick="applyTheme('forest', this)">🌲</button>
+      </div>
+      <div class="auto-theme-toggle" onclick="toggleAutoTheme(this.querySelector('.toggle-switch'))">
+        <span>자동 테마</span>
+        <div class="toggle-switch"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="topbar">
+      <div class="topbar-left">
+        <div id="topbarTitle">나의 방</div>
+        <div id="topbarSubtitle">저장한 링크들이 가구처럼 배치되어 있어요</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-report-btn" onclick="openProductReport()" title="제작보고서">📋</button>
+        <button class="theme-toggle-btn" onclick="quickThemeToggle()" title="테마 전환">🎨</button>
+      </div>
+    </div>
+
+    <div id="viewContent">
+      <!-- ROOM VIEW -->
+      <div class="view active" id="view-room">
+        <div id="roomView">
+          <h2 id="roomTitle">🏠 나의 방</h2>
+          
+          <div class="room-scene-container">
+            <div class="room-scene-header">
+              <div class="room-scene-title">방 시각화</div>
+              <button class="toggle-btn" id="sceneToggleBtn" onclick="toggleRoomScene(this)">접기 ▲</button>
+            </div>
+            <div id="roomScene" class="room-grid">
+              <!-- 동적으로 생성됨 -->
+            </div>
+          </div>
+
+          <div class="room-grid-controls">
+            <div id="roomDesc" style="flex: 1;">저장된 링크 0개</div>
+          </div>
+
+          <div id="filterBar"></div>
+          <div id="roomGrid"></div>
+        </div>
+      </div>
+
+      <!-- LIBRARY VIEW -->
+      <div class="view" id="view-library">
+        <div id="libraryView">
+          <h2 id="roomTitle">📚 아카이브</h2>
+          
+          <div class="library-controls">
+            <div class="library-search">
+              <input type="text" id="searchInput" placeholder="링크 검색..." onkeyup="renderLibrary()">
+              <select id="sortSelect" onchange="renderLibrary()">
+                <option value="newest">최신순</option>
+                <option value="oldest">오래된순</option>
+                <option value="title">제목순</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="libFilterBar"></div>
+          <div id="libraryList"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS VIEW -->
+      <div class="view" id="view-settings">
+        <div id="settingsView">
+          <h2>⚙️ 테마 설정</h2>
+          
+          <div class="settings-card">
+            <div class="settings-title">통계</div>
+            <div class="stat-grid">
+              <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">전체 링크</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="statToday">0</div>
+                <div class="stat-label">오늘 추가</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="statCats">0</div>
+                <div class="stat-label">사용된 가구</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="statDays">1</div>
+                <div class="stat-label">사용 기간</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-title">데이터</div>
+            <div class="settings-actions">
+              <button class="settings-btn" onclick="exportData()">📦 내보내기</button>
+              <button class="settings-btn danger" onclick="clearAll()">🗑️ 전부 삭제</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="add-link-btn" onclick="openModal('addModal')">➕</button>
+</div>
+
+<!-- ADD LINK MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+    <div class="modal-title">링크 추가</div>
+    <div class="modal-subtitle">새로운 링크를 방에 배치해보세요</div>
+    
+    <div class="form-group">
+      <label class="form-label" for="linkUrl">URL</label>
+      <input type="url" class="form-input" id="linkUrl" placeholder="https://example.com">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" for="linkTitle">제목 (선택)</label>
+      <input type="text" class="form-input" id="linkTitle" placeholder="링크 제목">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label" for="linkMemo">메모 (선택)</label>
+      <input type="text" class="form-input" id="linkMemo" placeholder="메모...">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">가구 타입</label>
+      <div id="categorySelect" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;"></div>
+    </div>
+    
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeModal('addModal')">취소</button>
+      <button class="modal-btn primary" onclick="addLink()">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toastContainer"></div>
+
+<!-- PRODUCT REPORT MODAL -->
+<div id="reportModal" class="report-modal-overlay" onclick="closeProductReport(event)">
+  <div class="report-modal-box" onclick="event.stopPropagation()">
+    <div class="report-modal-header">
+      <h2>📋 제작보고서</h2>
+      <button class="report-modal-close" onclick="closeProductReport()">×</button>
+    </div>
+    <div class="report-modal-content">
+      <div class="report-section">
+        <h3>🤖 AI 개발 정보</h3>
+        <p>본 웹페이지는 <strong>Claude (Anthropic)</strong>를 활용하여 제작되었습니다. Claude는 고급 자연어 처리 능력을 갖춘 AI 어시스턴트로, 복잡한 개발 요구사항을 이해하고 실행하는 데 탁월합니다.</p>
+      </div>
+
+      <div class="report-section">
+        <h3>✨ 구현된 기술</h3>
+        <ul class="report-list">
+          <li><strong>반응형 웹 디자인:</strong> 모든 기기에 최적화된 유동적인 레이아웃</li>
+          <li><strong>다중 테마 시스템:</strong> 라이트, 다크, 이브닝, 포레스트 테마 지원</li>
+          <li><strong>방(Room) 시각화:</strong> 가구 메타포를 이용한 직관적인 링크 저장소</li>
+          <li><strong>LocalStorage 데이터 관리:</strong> 브라우저 기반의 영구 데이터 저장</li>
+          <li><strong>실시간 필터링 및 정렬:</strong> 카테고리별 동적 필터링 기능</li>
+          <li><strong>자동 테마 전환:</strong> 시간대별 테마 자동 변경 기능</li>
+          <li><strong>부드러운 애니메이션:</strong> Cubic-bezier 기반의 자연스러운 UI 전환</li>
+          <li><strong>검색 및 통계:</strong> 통합 검색과 링크 통계 제공</li>
+        </ul>
+      </div>
+
+      <div class="report-section">
+        <h3>🔄 개발 과정 및 수정 내역</h3>
+        <div class="report-timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker">1</div>
+            <div class="timeline-content">
+              <h4>초기 개발</h4>
+              <p>기본 링크 저장 및 관리 기능이 구현된 초기 버전 개발</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">2</div>
+            <div class="timeline-content">
+              <h4>방(Room) 시각화 추가</h4>
+              <p><strong>개선 요청:</strong> 단순 목록 형식에서 벗어나 시각적으로 더 흥미로운 방 시스템 구현<br/>
+              <strong>구현:</strong> 가구 아이콘과 함께 카테고리별 시각화 추가, 인터랙티브한 필터링 기능 개발</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">3</div>
+            <div class="timeline-content">
+              <h4>텍스트 잘림 오류 해결</h4>
+              <p><strong>문제 발생:</strong> 방 시각화 구현 후 링크 제목과 설명이 일부 잘리는 버그 발생<br/>
+              <strong>원인:</strong> CSS overflow 속성과 width 제약으로 인한 텍스트 오버플로우<br/>
+              <strong>해결:</strong> CSS 텍스트 처리 개선, white-space 속성 조정, 말줄임표(ellipsis) 적용을 통해 모든 기기에서 텍스트가 올바르게 표시되도록 수정</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker">✓</div>
+            <div class="timeline-content">
+              <h4>최종 완성</h4>
+              <p>모든 기능이 안정적으로 작동하며 시각적으로 일관성 있는 완성된 버전 완성</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <h3>📊 주요 특징</h3>
+        <ul class="report-list">
+          <li>💾 자동 저장: 변경사항이 즉시 로컬스토리지에 저장됨</li>
+          <li>🎨 다양한 테마: 사용자 선호도에 맞는 4가지 테마 제공</li>
+          <li>📱 모바일 친화적: 터치 및 반응형 UI 최적화</li>
+          <li>🔍 강력한 검색: 제목, URL, 메모 기반 통합 검색</li>
+          <li>📈 통계 제공: 저장된 링크 수, 카테고리 분포 등 통계 표시</li>
+        </ul>
+      </div>
+
+      <div class="report-footer">
+        <p>TapRoom — Digital Archiving Space</p>
+        <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 8px;">제작일: 2026년 | 기술: HTML5, CSS3, Vanilla JavaScript</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── State & Config ────────────────────────────────────── */
+const FURNITURE = [
+  { id: 'sofa',    label: '쇼파',  desc: '편하게 앉아서 보는',   icon: '🛋️', color: '#D4745F', bg: 'rgba(212,116,95,0.1)' },
+  { id: 'bed',     label: '침대',  desc: '편하게 누워서 보는',   icon: '🛏️', color: '#8B9DC3', bg: 'rgba(139,157,195,0.1)' },
+  { id: 'desk',    label: '책상',  desc: '집중해서 보는',       icon: '📖', color: '#7A8F5C', bg: 'rgba(122,143,92,0.1)' },
+  { id: 'audio',   label: '오디오',desc: '들으면서 하는',       icon: '🎧', color: '#C4947C', bg: 'rgba(196,148,124,0.1)' },
+  { id: 'plant',   label: '화분',  desc: '성장하는',           icon: '🌿', color: '#6BA887', bg: 'rgba(107,168,135,0.1)' },
+  { id: 'monitor', label: '모니터',desc: '멀티태스킹으로 보는', icon: '🖥️', color: '#5A7FA8', bg: 'rgba(90,127,168,0.1)' },
+];
+
+let state = {
+  user: null,
+  theme: 'light',
+  autoTheme: false,
+  filter: 'all',
+  libFilter: 'all',
+  links: [],
+  joinDate: null,
+};
+
+/* ─── Load & Save ──────────────────────────────────────── */
+function load() {
+  const saved = localStorage.getItem('taproom_state');
+  if (saved) {
+    const loaded = JSON.parse(saved);
+    state = { ...state, ...loaded };
+  }
+}
+
+function save() {
+  localStorage.setItem('taproom_state', JSON.stringify(state));
+}
+
+/* ─── Auth ─────────────────────────────────────────────── */
+function startApp() {
+  if (!state.user) {
+    state.user = 'user_' + Date.now();
+    state.joinDate = new Date().toISOString();
+    save();
+  }
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('appContainer').style.display = 'flex';
+  enterApp();
+}
+
+function enterApp() {
+  renderRoom();
+  renderLibrary();
+  renderStats();
+  renderCategorySelect();
+  checkAutoTheme();
+}
+
+/* ─── Modal ────────────────────────────────────────────── */
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+/* ─── Add Link ─────────────────────────────────────────── */
+function renderCategorySelect() {
+  const container = document.getElementById('categorySelect');
+  container.innerHTML = FURNITURE.map(f => `
+    <button class="modal-btn" style="border-color:${f.color}; color:${f.color}" data-cat="${f.id}" onclick="selectCategory('${f.id}', this)">${f.icon} ${f.label}</button>
+  `).join('');
+  selectCategory(FURNITURE[0].id, container.firstChild);
+}
+
+function selectCategory(cat, el) {
+  document.querySelectorAll('#categorySelect .modal-btn').forEach(b => {
+    b.style.background = 'transparent';
+  });
+  el.style.background = 'rgba(200,132,58,0.15)';
+  document.getElementById('categorySelect').dataset.selected = cat;
+}
+
+function addLink() {
+  const url = document.getElementById('linkUrl').value.trim();
+  if (!url) {
+    toast('URL을 입력해주세요', 'error');
+    return;
+  }
+
+  try {
+    new URL(url);
+  } catch (e) {
+    toast('유효한 URL을 입력해주세요', 'error');
+    return;
+  }
+
+  const title = document.getElementById('linkTitle').value.trim() || extractTitleFromUrl(url);
+  const category = document.getElementById('categorySelect').dataset.selected || FURNITURE[0].id;
+  const memo = document.getElementById('linkMemo').value.trim();
+  const domain = new URL(url).hostname;
+
+  const link = {
+    id: 'link_' + Date.now() + Math.random().toString(36).substr(2, 9),
+    url,
+    title,
+    category,
+    memo,
+    domain,
+    favicon: `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+    date: new Date().toISOString(),
+  };
+
+  const furn = FURNITURE.find(f => f.id === category) || FURNITURE[0];
+  state.links.unshift(link);
+  save();
+  closeModal('addModal');
+  renderRoom();
+  renderLibrary();
+  renderStats();
+  
+  // Clear form
+  document.getElementById('linkUrl').value = '';
+  document.getElementById('linkTitle').value = '';
+  document.getElementById('linkMemo').value = '';
+  
+  toast(`${furn.icon} 링크를 방에 배치했어요!`, 'success');
+}
+
+function extractTitleFromUrl(url) {
+  try {
+    const u = new URL(url);
+    return u.hostname.replace('www.', '').split('.')[0];
+  } catch (e) {
+    return url;
+  }
+}
+
+/* ─── Delete Link ──────────────────────────────────────── */
+function deleteLink(id, e) {
+  e.stopPropagation();
+  state.links = state.links.filter(l => l.id !== id);
+  save();
+  renderRoom();
+  renderLibrary();
+  renderStats();
+  toast('링크를 삭제했어요', 'info');
+}
+
+function openLink(url) {
+  window.open(url, '_blank', 'noopener');
+}
+
+/* ─── Filter ───────────────────────────────────────────── */
+function setFilter(cat, el) {
+  state.filter = cat;
+  document.querySelectorAll('#filterBar .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderRoom();
+}
+
+function setLibFilter(cat, el) {
+  state.libFilter = cat;
+  document.querySelectorAll('#libFilterBar .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderLibrary();
+}
+
+/* ─── Render Filters ───────────────────────────────────── */
+function renderFilterBar(containerId, activeCat, onClickFn) {
+  const usedCats = [...new Set(state.links.map(l => l.category))];
+  const container = document.getElementById(containerId);
+  const chips = [`<div class="filter-chip ${activeCat === 'all' ? 'active' : ''}" data-cat="all" onclick="${onClickFn}('all', this)"><span class="chip-icon">✨</span> 전체</div>`];
+  FURNITURE.forEach(f => {
+    if (!usedCats.includes(f.id)) return;
+    const count = state.links.filter(l => l.category === f.id).length;
+    chips.push(`<div class="filter-chip ${activeCat === f.id ? 'active' : ''}" data-cat="${f.id}" onclick="${onClickFn}('${f.id}', this)"><span class="chip-icon">${f.icon}</span> ${f.label} <span style="opacity:.5;font-size:.65rem">${count}</span></div>`);
+  });
+  container.innerHTML = chips.join('');
+}
+
+/* ─── Room Scene (개선된 시각화) ────────────────────────────── */
+function renderRoomScene() {
+  const scene = document.getElementById('roomScene');
+  let html = '';
+
+  FURNITURE.forEach(f => {
+    const catLinks = state.links.filter(l => l.category === f.id);
+    const count = catLinks.length;
+
+    // 각 가구별 장식 HTML 생성
+    let decorationHtml = '';
+    
+    if (f.id === 'sofa' || f.id === 'bed' || f.id === 'desk') {
+      // 쇼파, 침대, 책상에는 작은 물건 추가
+      for (let i = 0; i < Math.min(count, 8); i++) {
+        const items = ['📱', '📘', '☕', '🎀', '🖊️', '🔑', '💎', '🌟'];
+        decorationHtml += `<div class="fi-dot" style="font-size:0.6rem;width:auto;height:auto;background:none;opacity:0.7">${items[i % items.length]}</div>`;
+      }
+    } else if (f.id === 'plant') {
+      // 화분: 나뭇잎 추가
+      for (let i = 0; i < Math.min(count, 6); i++) {
+        decorationHtml += `<span class="leaf" style="animation-delay:${i * 0.3}s">🍃</span>`;
+      }
+    } else if (f.id === 'monitor') {
+      // 모니터: 화면에 텍스트 표시
+      decorationHtml += `<div style="position:absolute;bottom:20px;left:20px;right:20px;background:rgba(90,127,168,0.3);border-radius:4px;padding:4px;height:30px;overflow:hidden">`;
+      for (let i = 0; i < Math.min(count, 5); i++) {
+        decorationHtml += `<div class="monitor-text">━━━</div>`;
+      }
+      decorationHtml += `</div>`;
+    } else if (f.id === 'audio') {
+      // 오디오: 음표 추가
+      for (let i = 0; i < Math.min(count, 5); i++) {
+        decorationHtml += `<span class="music-note" style="animation-delay:${i * 0.2}s">♪</span>`;
+      }
+    }
+
+    const tooltipHtml = count === 0 
+      ? `<span style="opacity:.5">저장된 링크 없음</span>`
+      : `<strong style="font-size:.62rem;opacity:.55;letter-spacing:1px">${f.label} (${count})</strong><div style="margin-top:4px;max-width:200px;word-wrap:break-word">${catLinks.slice(0, 3).map(l => `<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">• ${escHtml(l.title)}</div>`).join('')}${count > 3 ? `<div style="opacity:.45;margin-top:3px;font-size:.62rem">외 ${count - 3}개 더...</div>` : ''}</div>`;
+
+    html += `
+    <div class="furniture-zone ${count === 0 ? 'fz-empty' : ''}" id="fz-${f.id}" onclick="filterFromScene('${f.id}')">
+      <div class="furn-items-decorations">${decorationHtml}</div>
+      <div class="furn-icon-large">${f.icon}</div>
+      <div class="furn-info">
+        <div class="furn-name">${f.label}</div>
+        <div class="furn-count">
+          <span>${f.desc}</span>
+          <div class="furn-count-badge" ${count === 0 ? 'style="display:none"' : ''}>${count}</div>
+        </div>
+      </div>
+      <div class="furn-tooltip">${tooltipHtml}</div>
+    </div>`;
+  });
+
+  scene.innerHTML = html;
+}
+
+function filterFromScene(cat) {
+  state.filter = cat;
+  renderRoom();
+  setTimeout(() => {
+    document.getElementById('roomGrid')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 80);
+}
+
+/* ─── Toggle Room Scene (수정된 버전) ────────────────────────── */
+function toggleRoomScene(btn) {
+  const scene = document.getElementById('roomScene');
+  const isCollapsed = scene.classList.toggle('collapsed');
+  btn.textContent = isCollapsed ? '펼치기 ▼' : '접기 ▲';
+}
+
+/* ─── Render Room ──────────────────────────────────────── */
+function renderRoom() {
+  renderRoomScene();
+  renderFilterBar('filterBar', state.filter, 'setFilter');
+  const grid = document.getElementById('roomGrid');
+  let links = [...state.links];
+
+  const pref = document.getElementById('cardSortPref')?.value || 'newest';
+  if (pref === 'oldest') links.reverse();
+  else if (pref === 'category') links.sort((a,b) => a.category.localeCompare(b.category));
+
+  document.getElementById('roomDesc').textContent = `저장된 링크 ${links.length}개`;
+
+  if (links.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🪑</div><div class="empty-title">방이 아직 비어있어요</div><div class="empty-desc">첫 번째 링크를 추가해서 나만의 공간을 꾸며보세요</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = links.map((l, i) => {
+    const furn = FURNITURE.find(f => f.id === l.category) || FURNITURE[0];
+    const dim  = state.filter !== 'all' && state.filter !== l.category ? 'dim' : '';
+    const dateStr = new Date(l.date).toLocaleDateString('ko-KR', {month:'short', day:'numeric'});
+    return `
+    <div class="link-card ${dim}" onclick="openLink('${escHtml(l.url)}')" style="animation-delay:${i*0.04}s">
+      <div class="card-accent-bar" style="background:linear-gradient(90deg,${furn.color},transparent)"></div>
+      <div class="card-header">
+        <div class="card-furniture" style="background:${furn.bg}; color:${furn.color}">${furn.icon}</div>
+        <div class="card-meta">
+          <div class="card-category">${furn.label} · ${furn.desc}</div>
+          <div class="card-title">${escHtml(l.title)}</div>
+        </div>
+        <img class="card-favicon" src="${l.favicon}" onerror="this.style.display='none'" alt="">
+      </div>
+      <div class="card-url">${escHtml(l.domain)}</div>
+      ${l.memo ? `<div class="card-memo">${escHtml(l.memo)}</div>` : ''}
+      <div class="card-footer">
+        <div class="card-date">${dateStr}</div>
+        <div class="card-actions">
+          <button class="card-action-btn" onclick="copyLink('${escHtml(l.url)}', event)" title="복사">📋</button>
+          <button class="card-action-btn delete" onclick="deleteLink('${l.id}', event)" title="삭제">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ─── Render Library ───────────────────────────────────── */
+function renderLibrary() {
+  renderFilterBar('libFilterBar', state.libFilter, 'setLibFilter');
+  const list = document.getElementById('libraryList');
+  const query = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const sort  = document.getElementById('sortSelect')?.value || 'newest';
+
+  let links = [...state.links];
+  if (state.libFilter !== 'all') links = links.filter(l => l.category === state.libFilter);
+  if (query) links = links.filter(l =>
+    l.title.toLowerCase().includes(query) ||
+    l.url.toLowerCase().includes(query) ||
+    (l.memo || '').toLowerCase().includes(query)
+  );
+  if (sort === 'oldest') links.reverse();
+  else if (sort === 'title') links.sort((a,b) => a.title.localeCompare(b.title, 'ko'));
+
+  if (links.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">${query ? '검색 결과가 없어요' : '저장된 링크가 없어요'}</div><div class="empty-desc">${query ? '다른 검색어를 시도해보세요' : '링크를 추가하면 여기에 표시됩니다'}</div></div>`;
+    return;
+  }
+
+  list.innerHTML = links.map((l, i) => {
+    const furn = FURNITURE.find(f => f.id === l.category) || FURNITURE[0];
+    const dateStr = new Date(l.date).toLocaleDateString('ko-KR', {month:'long', day:'numeric'});
+    return `
+    <div class="list-item" onclick="openLink('${escHtml(l.url)}')" style="animation-delay:${i*0.03}s">
+      <div class="list-furniture">${furn.icon}</div>
+      <div class="list-info">
+        <div class="list-title">${escHtml(l.title)}</div>
+        <div class="list-url">${escHtml(l.domain)}</div>
+      </div>
+      <div class="list-category">${furn.label}</div>
+      <div class="list-date">${dateStr}</div>
+      <button class="list-delete" onclick="deleteLink('${l.id}', event)" title="삭제">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+/* ─── Render Stats ─────────────────────────────────────── */
+function renderStats() {
+  const today = new Date().toDateString();
+  const todayCount = state.links.filter(l => new Date(l.date).toDateString() === today).length;
+  const usedCats = new Set(state.links.map(l => l.category)).size;
+  const days = state.joinDate
+    ? Math.max(1, Math.ceil((Date.now() - new Date(state.joinDate)) / 86400000))
+    : 1;
+
+  document.getElementById('statTotal').textContent  = state.links.length;
+  document.getElementById('statToday').textContent  = todayCount;
+  document.getElementById('statCats').textContent   = usedCats;
+  document.getElementById('statDays').textContent   = days;
+}
+
+/* ─── Views ────────────────────────────────────────────── */
+const viewMeta = {
+  room:     { title: '나의 방',    subtitle: '저장한 링크들이 가구처럼 배치되어 있어요', icon: '🏠' },
+  library:  { title: '아카이브',  subtitle: '카테고리별 전체 링크 목록', icon: '📚' },
+  settings: { title: '테마 설정', subtitle: '방의 분위기와 환경을 설정해요', icon: '⚙️' },
+};
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+
+  const meta = viewMeta[name];
+  document.getElementById('topbarTitle').textContent    = meta.title;
+  document.getElementById('topbarSubtitle').textContent = meta.subtitle;
+  document.getElementById('roomTitle').textContent      = meta.icon + ' ' + meta.title;
+
+  if (name === 'library')  renderLibrary();
+  if (name === 'settings') renderStats();
+}
+
+/* ─── Theme ────────────────────────────────────────────── */
+function applyTheme(name, el, silent) {
+  document.documentElement.setAttribute('data-theme', name === 'light' ? '' : name);
+  state.theme = name;
+  if (!silent) save();
+
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else {
+    const map = { light:0, dark:1, evening:2, forest:3 };
+    const btns = document.querySelectorAll('.theme-btn');
+    if (btns[map[name]]) btns[map[name]].classList.add('active');
+  }
+}
+
+function quickThemeToggle() {
+  const next = state.theme === 'light' ? 'dark' : 'light';
+  applyTheme(next, null);
+  toast(next === 'dark' ? '🌙 다크 모드' : '☀️ 라이트 모드', 'info');
+}
+
+function checkAutoTheme() {
+  if (!state.autoTheme) return;
+  const h = new Date().getHours();
+  applyTheme((h >= 20 || h < 7) ? 'dark' : 'light', null, true);
+}
+
+function toggleAutoTheme(el) {
+  el.classList.toggle('on');
+  state.autoTheme = el.classList.contains('on');
+  save();
+  if (state.autoTheme) checkAutoTheme();
+}
+
+/* ─── Utilities ────────────────────────────────────────── */
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function toast(msg, type = 'info') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(20px)'; t.style.transition='all .3s'; setTimeout(()=>t.remove(), 300); }, 2800);
+}
+
+function copyLink(url, e) {
+  e.stopPropagation();
+  navigator.clipboard?.writeText(url).then(() => toast('📋 링크를 복사했어요', 'success')).catch(()=>{});
+}
+
+function clearAll() {
+  if (!confirm('모든 링크를 삭제할까요?')) return;
+  state.links = [];
+  save();
+  renderRoom();
+  renderLibrary();
+  renderStats();
+  toast('🗑️ 모든 링크를 삭제했어요', 'info');
+}
+
+function exportData() {
+  const json = JSON.stringify(state.links, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'taproom-backup.json';
+  a.click();
+  toast('📦 데이터를 내보냈어요', 'success');
+}
+
+function saveSettings() { save(); }
+
+/* ─── Product Report Modal ─────────────────────────── */
+function openProductReport() {
+  const modal = document.getElementById('reportModal');
+  modal.classList.add('active');
+}
+
+function closeProductReport(event) {
+  if (event && event.target.id !== 'reportModal') return;
+  const modal = document.getElementById('reportModal');
+  modal.classList.remove('active');
+}
+
+/* ─── Init ─────────────────────────────────────────────── */
+load();
+
+if (state.user) {
+  document.getElementById('appContainer').style.display = 'flex';
+  enterApp();
+} else {
+  document.getElementById('landing').style.display = 'flex';
+}
+
+setInterval(checkAutoTheme, 60000);
+</script>
+
+</body>
+</html>
